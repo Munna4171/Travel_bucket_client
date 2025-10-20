@@ -1,6 +1,4 @@
 import React from 'react';
-// --- THIS IS THE FIX ---
-// You were missing 'BrowserRouter' from this import line.
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Component Imports
@@ -10,18 +8,19 @@ import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import SignIn from './pages/SignIn.jsx';
 import SignUp from './pages/SignUp.jsx';
-import Dashboard from './pages/Dashboard.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx'; 
 import Profile from './pages/Profile.jsx'; 
 import TravelGoals from './pages/TravelGoals.jsx';
-import PhotoGallery from './pages/PhotoGallery.jsx';
+import PhotoGallery from './pages/PhotoGallery.jsx'; 
 import Statistics from './pages/Statistics.jsx';
+// --- 1. IMPORT THE NEW TRIP PLANNER PAGE ---
+// Note: You will need to create this file next.
+import TripPlanner from './pages/TripPlanner.jsx';
 
 export default function App() {
   return (
     <BrowserRouter>
-      {/* The Header appears on all pages */}
       <Header />
-      
       <Routes>
         {/* Public Routes */}
         <Route path='/' element={<Home />} />
@@ -29,16 +28,20 @@ export default function App() {
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
         
-        {/* Routes that need a logged-in user */}
-        {/* The PrivateRoute component protects all the routes nested inside it */}
+        {/* We keep the path the same, but point it to the new component */}
+        <Route path='/dashboard' element={<AdminDashboard />} />
+        
+        {/* Private Routes */}
         <Route element={<PrivateRoute />}>
-          <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/travel-goals' element={<TravelGoals />} />
           <Route path='/photo-gallery' element={<PhotoGallery />} />
           <Route path='/statistics' element={<Statistics />} />
+          {/* --- 2. ADD THE NEW ROUTE FOR TRIP PLANNER --- */}
+          <Route path='/trip-planner' element={<TripPlanner />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+
