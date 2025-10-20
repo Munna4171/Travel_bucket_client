@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux'; // <-- 1. IMPORT useDispatch
-import { signInSuccess } from '../redux/user/userSlice'; // <-- 2. IMPORT YOUR ACTION (Check this path!)
+import { useDispatch } from 'react-redux';
+import { signInSuccess } from '../redux/user/userSlice';
+
+// --- THIS IS THE FIX ---
+// 1. Get the backend URL from the environment variable.
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // <-- 3. INITIALIZE useDispatch
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleSignIn = async (e) => {
@@ -23,11 +24,10 @@ export default function SignIn() {
     setError(null);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      // 2. Use the full API_URL in your fetch request.
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -35,27 +35,20 @@ export default function SignIn() {
       setLoading(false);
 
       if (data.success === false) {
-        setError(data.message || 'Sign in failed due to server error.');
+        setError(data.message || 'Sign in failed.');
         return;
       }
       
-      // This is good, but not enough
-      localStorage.setItem('user_auth', JSON.stringify(data.user)); 
-      
-      // --- THIS IS THE FIX ---
-      // 4. Dispatch the user data to the Redux store
       dispatch(signInSuccess(data.user));
-      // -------------------------
-      
-      // 5. Navigate to the dashboard
       navigate('/dashboard'); 
 
     } catch (apiError) {
       setLoading(false);
-      setError(apiError.message || 'Could not connect to the server. Check your network and proxy.');
+      setError(apiError.message || 'Could not connect to the server.');
     }
   };
 
+  // ... (rest of your return JSX is fine)
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="flex bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full">
