@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+// --- NEW: Import Redux tools ---
+import { useDispatch } from 'react-redux';
+import { signInSuccess } from '../redux/user/userSlice';
 
-// --- THIS IS THE FIX ---
-// 1. Get the backend URL from the environment variable.
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export default function SignUp() {
@@ -10,6 +11,8 @@ export default function SignUp() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  // --- NEW: Initialize dispatch ---
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -24,7 +27,6 @@ export default function SignUp() {
       setLoading(true);
       setError(null);
 
-      // 2. Use the full API_URL in your fetch request.
       const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
@@ -41,8 +43,12 @@ export default function SignUp() {
         return;
       }
       
-      // On success, redirect to the sign-in page
-      navigate('/signin');
+      // --- NEW LOGIC: Handle login on signup ---
+      // 1. Dispatch the user data to Redux to log them in
+      dispatch(signInSuccess(data.user));
+      // 2. Navigate to the dashboard instead of the sign-in page
+      navigate('/dashboard');
+      // --- END NEW LOGIC ---
 
     } catch (err) {
       setLoading(false);
@@ -95,3 +101,4 @@ export default function SignUp() {
     </div>
   );
 }
+
