@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add any global custom styles here */
+
+body {
+    /* Prevents default margin from pushing content */
+    margin: 0; 
+}
